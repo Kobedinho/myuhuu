@@ -1,7 +1,7 @@
+
 if( !window.UHUUWidget ){
-        window.uhuuOdoo = {};
-        var session = require('web.session');
-        console.log(session)
+    window.uhuuOdoo = {};
+    setTimeout(()=>{
         var h = document.getElementsByTagName('script')[0], j = document.createElement('script');
         j.async = false; 
         j.src = 'https://1a62-177-232-83-239.ngrok.io/uhuuWidgets.js';//Revisar url correcta
@@ -23,6 +23,7 @@ if( !window.UHUUWidget ){
                     })
                 },100)
             }*/
-            
+
         })
-    }
+    },500);
+}
