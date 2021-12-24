@@ -1,12 +1,60 @@
 # -*- coding: utf-8 -*-
 from odoo import http
-#import logging
-#_logger = logging.getLogger(__name__)
+import logging
+_logger = logging.getLogger(__name__)
 
 class Myuhuu(http.Controller):
-    @http.route('/myuhuu', auth='public')
+    #@http.route('/myuhuu', auth='public', methods=['GET'])
+    #def index(self, **kw):
+    #    return "Hello, world - Uhuu"
+    
+    
+    @http.route('/myuhuu', auth='user', methods=['POST'], type='json')
     def index(self, **kw):
-        return "Hello, world - Uhuu"
+        json_data = http.request.jsonrequest
+        query, statusCode, message, contacts = [], 200, "Ok", []
+        #session = http.request.session
+        #query = json_data["query"]
+        #_logger.info(json_data)
+        #_logger.info(session)
+        _logger.info(http.request.session.sid)
+        #self = http.request.env['res.users'].browse(session.uid)
+        #expected = self._compute_session_token(session.sid)
+        #_logger.info(expected)
+        #users_db = http.request.env['res.partner'].search(query)
+        #for record in users_db :
+        #            contact = {
+        #                "id": record['id'],
+        #                "name": record['name']
+        #            }
+        #            contacts.append(contact)
+                    
+                    
+        #fieldsData = {'id', 'login', 'password', 'active'}
+        #_logger.info(http.request.uid)
+        #_logger.info(http.request.session.uid)
+        #_logger.info(http.request.env.context.get('uid'))
+        
+        #session_fields = ', '.join(sorted(fieldsData))
+        #http.request.cr.execute("""SELECT %s, (SELECT value FROM ir_config_parameter WHERE key='database.secret')
+        #                        FROM res_users
+        #                        WHERE id=%%s""" % (session_fields), (2,))
+        #data = http.request.cr.fetchall()
+        #_logger.info(data)
+        
+        # generate hmac key
+        #key = (u'%s' % (data_fields,)).encode('utf-8')
+        # hmac the session id
+        #data = sid.encode('utf-8')
+        #h = hmac.new(key, data, sha256)
+        # keep in the cache the token
+        #return h.hexdigest()
+        
+        #new_token = h.hexdigest()
+        #request.session.session_token = new_token
+            
+        return {'status':'Ok','msg':'Hello, world - Uhuu', 'data':http.request.session.sid}
+    
     
     # -------------------------------------
     # CONTACTS - Custom API - C,R,U

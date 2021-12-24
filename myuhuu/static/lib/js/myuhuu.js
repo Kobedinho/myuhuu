@@ -8,6 +8,7 @@ odoo.define('myuhuu.widget', function (require) {
     // import qweb to render a view
     const env = require('web.env');
     const session = require("web.session");
+    var ajax = require('web.ajax');
     console.log("Env:: id Debug:: ",env.isDebug())
     console.log("ession.username:: ",session.username)
     // create an object with any name
@@ -20,8 +21,18 @@ odoo.define('myuhuu.widget', function (require) {
     if( !window.UHUUWidget ){
         window.UHUUOdoo = {
             env: env,
-            session:session
+            session:session,
+            ajax: ajax
         };
+        ajax.jsonRpc('/myuhuu',
+            'call', 
+            {},
+            {'async': false}
+        ).then(function (data) {
+            console.group("jsonRpc myuhuu")
+            console.log(data);
+            console.groupEnd()
+        });
         setTimeout(()=>{
             var h = document.getElementsByTagName('script')[0], j = document.createElement('script');
             j.async = false; 
@@ -29,21 +40,21 @@ odoo.define('myuhuu.widget', function (require) {
             h.parentNode.insertBefore(j, h);
             j.addEventListener('load', () => {
                 console.log("Hemos cargado uhuuWidgets.js")
-                /*if( !window.UhuuChat ){
+                if( !window.UhuuChat ){
                     setTimeout(function(){ 
-                        window.UhuuChatUrl = "https://ea06-177-232-83-239.ngrok.io";
+                        window.UhuuChatUrl = "https://omnichanneldev.myuhuu.com";
                         console.log("handleUhuuBtn -- uhuuchat : afterload script - window.UHUUWidget = ",window.UHUUWidget)
                         //window.UHUUWidget.setUhuuWidgetOption( option.name, option.urlApp, option.params )
                         var h2 = document.getElementsByTagName('script')[0], j2 = document.createElement('script');
                         j2.async = false; 
-                        j2.src = 'https://ea06-177-232-83-239.ngrok.io/uhuuchatmini.min.js';
+                        j2.src = 'https://omnichannelqa.myuhuu.com/uhuuchatmini.min.js'; //'https://793b-2806-2f0-7080-8483-5c0-ea47-2d6d-2160.ngrok.io/uhuuchatmini.min.js';
                         h2.parentNode.insertBefore(j2, h2);
                         j2.addEventListener('load', () => {
-                            //console.log("handleUhuuChatBtn -- UHUUWidget.options 1:: ", window.UHUUWidget.options)
+                            console.log("handleUhuuChatBtn -- UHUUWidget.options 1:: ", window.UHUUWidget.options)
                             console.log("Hemos cargado uhuuchatmini.min.js")
                         })
                     },100)
-                }*/
+                }
                 if( !window.UHUUVoIp ){
                     var h2 = document.getElementsByTagName('script')[0], j2 = document.createElement('script');
                     j2.async = false; 
