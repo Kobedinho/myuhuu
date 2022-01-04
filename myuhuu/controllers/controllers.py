@@ -4,55 +4,9 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class Myuhuu(http.Controller):
-    #@http.route('/myuhuu', auth='public', methods=['GET'])
-    #def index(self, **kw):
-    #    return "Hello, world - Uhuu"
-    
-    
+        
     @http.route('/myuhuu', auth='user', methods=['POST'], type='json')
-    def index(self, **kw):
-        json_data = http.request.jsonrequest
-        query, statusCode, message, contacts = [], 200, "Ok", []
-        #session = http.request.session
-        #query = json_data["query"]
-        #_logger.info(json_data)
-        #_logger.info(session)
-        _logger.info(http.request.session.sid)
-        #self = http.request.env['res.users'].browse(session.uid)
-        #expected = self._compute_session_token(session.sid)
-        #_logger.info(expected)
-        #users_db = http.request.env['res.partner'].search(query)
-        #for record in users_db :
-        #            contact = {
-        #                "id": record['id'],
-        #                "name": record['name']
-        #            }
-        #            contacts.append(contact)
-                    
-                    
-        #fieldsData = {'id', 'login', 'password', 'active'}
-        #_logger.info(http.request.uid)
-        #_logger.info(http.request.session.uid)
-        #_logger.info(http.request.env.context.get('uid'))
-        
-        #session_fields = ', '.join(sorted(fieldsData))
-        #http.request.cr.execute("""SELECT %s, (SELECT value FROM ir_config_parameter WHERE key='database.secret')
-        #                        FROM res_users
-        #                        WHERE id=%%s""" % (session_fields), (2,))
-        #data = http.request.cr.fetchall()
-        #_logger.info(data)
-        
-        # generate hmac key
-        #key = (u'%s' % (data_fields,)).encode('utf-8')
-        # hmac the session id
-        #data = sid.encode('utf-8')
-        #h = hmac.new(key, data, sha256)
-        # keep in the cache the token
-        #return h.hexdigest()
-        
-        #new_token = h.hexdigest()
-        #request.session.session_token = new_token
-            
+    def index(self, **kw):    
         return {'status':'Ok','msg':'Hello, world - Uhuu', 'data':http.request.session.sid}
     
     
@@ -64,18 +18,18 @@ class Myuhuu(http.Controller):
     def getContacts(self, **kw):
         ## Validar con try/catch para evitar problemas, o gestionar las respuestas del api
         json_data = http.request.jsonrequest
-        query, statusCode, message, contacts = [], 200, "Ok", []
+        query, statusCode, message, contacts, fields, limit = [], 200, "Ok", [], ['id','name'], 5
+        if 'fields' in json_data:
+            fields = json_data["fields"]
+            
+        if 'limit' in json_data:
+            limit = json_data["limit"]
+            
         if 'query' in json_data :
             query = json_data["query"]
             try:
-                contacts_db = http.request.env['res.partner'].search(query)
-                contacts=[]
-                for record in contacts_db :
-                    contact = {
-                        "id": record['id'],
-                        "name": record['name']
-                    }
-                    contacts.append(contact)
+                contacts_db = http.request.env['res.partner'].search(query, limit=limit)
+                contacts = contacts_db.read(fields) #[{'id': record.id} for record in contacts_db]
             
             except Exception as err:
                 print("A fault occurred")
@@ -156,17 +110,18 @@ class Myuhuu(http.Controller):
     @http.route('/myuhuu/leads', auth='user', methods=['GET'], type='json')
     def getLeads(self, **kw):
         json_data = http.request.jsonrequest
-        query, statusCode, message, leads = [], 200, "Ok", []
+        query, statusCode, message, leads, fields, limit = [], 200, "Ok", [], ['id','name'], 5
+        if 'fields' in json_data:
+            fields = json_data["fields"]
+        
+        if 'limit' in json_data:
+            limit = json_data["limit"]
+
         if 'query' in json_data :
             query = json_data["query"]
             try:
-                leads_db = http.request.env['crm.lead'].search(query)
-                for record in leads_db :
-                    lead = {
-                        "id": record['id'],
-                        "name": record['name']
-                    }
-                    leads.append(lead)
+                leads_db = http.request.env['crm.lead'].search(query, limit=limit)
+                leads = leads_db.read(fields)
             
             except Exception as err:
                 print("A fault occurred")
@@ -249,17 +204,18 @@ class Myuhuu(http.Controller):
     @http.route('/myuhuu/notes', auth='user', methods=['GET'], type='json')
     def getNotes(self, **kw):
         json_data = http.request.jsonrequest
-        query, notes, statusCode, message = [], [], 200, "Ok"
+        query, notes, statusCode, message, fields, limit  = [], [], 200, "Ok", ['id','name'], 5
+        if 'fields' in json_data:
+            fields = json_data["fields"]
+        
+        if 'limit' in json_data:
+            limit = json_data["limit"]
+
         if 'query' in json_data :
             query = json_data["query"]
             try:
-                notes_db = http.request.env['mail.message'].search(query)
-                for record in notes_db :
-                    note = {
-                        "id": record['id'],
-                        "name": record['body']
-                    }
-                    notes.append(note)
+                notes_db = http.request.env['mail.message'].search(query, limit=limit)
+                notes = notes_db.read(fields)
                     
             except Exception as err:
                 statusCode = 500
@@ -317,15 +273,3 @@ class Myuhuu(http.Controller):
         
         return { "status":statusCode, "message":message, "response":response }
 
-#    @http.route('/myuhuu/myuhuu/objects', auth='public')
-#    def list(self, **kw):
-#        return http.request.render('myuhuu.listing', {
-#            'root': '/myuhuu/myuhuu',
-#            'objects': http.request.env['myuhuu.myuhuu'].search([]),
-#        })
-
-#    @http.route('/myuhuu/myuhuu/objects/<model("myuhuu.myuhuu"):obj>', auth='public')
-#    def object(self, obj, **kw):
-#        return http.request.render('myuhuu.object', {
-#            'object': obj
-#        })
